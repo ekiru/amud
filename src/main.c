@@ -16,7 +16,7 @@ int main(int argc, char **argv) {
 	pthread_t listener_thread,
 	          event_threads[EVENT_THREAD_COUNT],
 		  io_threads[IO_THREAD_COUNT];
-	int port[1] = { 9000 };
+	char *port = "9000";
 
 	if (pthread_create(&listener_thread, NULL, listener_thread_start, (void *) port))
 		goto thread_error;
@@ -29,7 +29,13 @@ int main(int argc, char **argv) {
 			goto thread_error;
 	}
 
-	pthread_exit(NULL);
+	pthread_join(listener_thread, NULL);
+	for (i = 0; i < EVENT_THREAD_COUNT; i++)
+		pthread_join(event_threads[i], NULL);
+	for (i = 0; i < IO_THREAD_COUNT; i++)
+		pthread_join(io_threads[i], NULL);
+	puts("main thread exiting.");
+	return 0;
 
 	thread_error:
 	fprintf(stderr, "%s: something went wrong in pthreads\n", argv[0]);

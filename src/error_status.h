@@ -1,0 +1,9 @@
+#ifndef ERROR_STATUS_H
+#define ERROR_STATUS_H
+
+enum {
+	SUCCESS_STATUS = 0,
+	LISTENER_INIT_ERROR,
+};
+
+#endif

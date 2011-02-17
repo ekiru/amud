@@ -5,5 +5,8 @@
 
 void *event_thread_start(void *ignore) {
 	puts("Event thread started.");
+	for (;;) {
+
+	}
 	pthread_exit(NULL);
 }

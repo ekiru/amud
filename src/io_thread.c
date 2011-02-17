@@ -5,5 +5,8 @@
 
 void *io_thread_start(void *ignore) {
 	puts("IO thread started.");
+	for (;;) {
+
+	}
 	pthread_exit(NULL);
 }
