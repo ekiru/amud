@@ -1,4 +1,4 @@
-CFLAGS=-Wall
+CFLAGS=-Wall -g
 LDFLAGS=-pthread
 
 main: main.o event_thread.o io_thread.o listener_thread.o

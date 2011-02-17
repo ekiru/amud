@@ -28,7 +28,13 @@ static int open_socket(char *port) {
 	}
 
 	for (p = server_info; p != NULL; p = p->ai_next) {
+		int yes = 1;
 		if ((result = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1) {
+			continue;
+		}
+
+		if (setsockopt(result, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) == -1) {
+			close(result);
 			continue;
 		}
 
@@ -36,6 +42,7 @@ static int open_socket(char *port) {
 			close(result);
 			continue;
 		}
+		break;
 	}
 
 	freeaddrinfo(server_info);
