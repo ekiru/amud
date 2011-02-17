@@ -1,6 +1,8 @@
 #include "listener_thread.h"
 
 #include "error_status.h"
+#include "events/new_connection.h"
+#include "event.h"
 
 #include <pthread.h>
 #include <stdio.h>
@@ -67,8 +69,7 @@ void *listener_thread_start(void *port) {
 	for (;;) {
 		int new_connection;
 		if ((new_connection = accept(listener_fd, NULL, 0)) != -1) {
-			send(new_connection, "Hello, world!", sizeof("Hello, world!"), 0);
-			close(new_connection);
+			event_queue(new_connection_event(new_connection));
 		}
 	}
 
