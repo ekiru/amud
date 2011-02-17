@@ -1,5 +1,6 @@
 #include "events/new_connection.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
@@ -11,12 +12,16 @@ typedef struct {
 	int fd;
 } new_conn_event;
 
+static unsigned long hits = 0;
+
 static int handle_new_conn_event(event *evp) {
 	new_conn_event *ev = (new_conn_event *) evp;
 	char *msg = "Hello, world!";
+	hits++;
 	send(ev->fd, msg, strlen(msg), 0);
 	close(ev->fd);
 	free(ev);
+	printf("Hit %lu\n", hits);
 	return 1;
 }
 
