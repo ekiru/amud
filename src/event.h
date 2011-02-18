@@ -2,7 +2,7 @@
 #define EVENT_H
 
 typedef struct event {
-	int (*handle_event)(struct event *);
+	struct event *(*handle_event)(struct event *);
 } event;
 
 event *event_dequeue(void);

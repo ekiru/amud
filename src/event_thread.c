@@ -4,14 +4,16 @@
 
 #include <pthread.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 void *event_thread_start(void *ignore) {
 	puts("Event thread started.");
 	for (;;) {
 		event *ev = event_dequeue();
 		if (ev != NULL) {
-			if (!ev->handle_event(ev))
-				event_queue(ev);
+			event *new_event;
+			if ((new_event = ev->handle_event(ev)) != NULL)
+				event_queue(new_event);
 		}
 	}
 	pthread_exit(NULL);

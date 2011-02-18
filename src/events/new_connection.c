@@ -14,7 +14,7 @@ typedef struct {
 
 static unsigned long hits = 0;
 
-static int handle_new_conn_event(event *evp) {
+static event *handle_new_conn_event(event *evp) {
 	new_conn_event *ev = (new_conn_event *) evp;
 	char *msg = "Hello, world!";
 	hits++;
@@ -22,7 +22,7 @@ static int handle_new_conn_event(event *evp) {
 	close(ev->fd);
 	free(ev);
 	printf("Hit %lu\n", hits);
-	return 1;
+	return NULL;
 }
 
 event *new_connection_event(int connection_fd) {
