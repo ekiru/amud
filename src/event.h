@@ -1,14 +1,8 @@
 #ifndef EVENT_H
 #define EVENT_H
 
-#include "followup.h"
-
-struct message;
-
 typedef struct event {
-	followup_type (*handle_event)(struct event *,
-                                  struct event **,
-	                              struct message **);
+	void (*handle_event)(struct event *);
 } event;
 
 event *event_dequeue(void);
