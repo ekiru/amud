@@ -7,6 +7,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "followup.h"
+
 typedef struct {
 	event ev;
 	int fd;
@@ -14,7 +16,9 @@ typedef struct {
 
 static unsigned long hits = 0;
 
-static event *handle_new_conn_event(event *evp) {
+static followup_type handle_new_conn_event(event *evp,
+                                           event **next_event,
+                                           struct message **next_message) {
 	new_conn_event *ev = (new_conn_event *) evp;
 	char *msg = "Hello, world!";
 	hits++;
@@ -22,7 +26,7 @@ static event *handle_new_conn_event(event *evp) {
 	close(ev->fd);
 	free(ev);
 	printf("Hit %lu\n", hits);
-	return NULL;
+	return FOLLOWUP_NOOP;
 }
 
 event *new_connection_event(int connection_fd) {

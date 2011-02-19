@@ -12,8 +12,16 @@ void *event_thread_start(void *ignore) {
 		event *ev = event_dequeue();
 		if (ev != NULL) {
 			event *new_event;
-			if ((new_event = ev->handle_event(ev)) != NULL)
+			struct message *new_message;
+			switch(ev->handle_event(ev, &new_event, &new_message)) {
+			case FOLLOWUP_EVENT:
 				event_queue(new_event);
+				break;
+			case FOLLOWUP_MESSAGE:
+			    break;
+			default:
+			    break;
+			}
 		}
 	}
 	pthread_exit(NULL);
