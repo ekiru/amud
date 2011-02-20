@@ -4,6 +4,7 @@
 enum {
 	SUCCESS_STATUS = 0,
 	LISTENER_INIT_ERROR,
+	ALLOCATION_ERROR,
 };
 
 #endif

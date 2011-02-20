@@ -2,10 +2,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <unistd.h>
+
+#include "error_status.h"
+#include "message.h"
+#include "messages/close.h"
+#include "messages/send.h"
 
 typedef struct {
 	event ev;
@@ -16,10 +17,13 @@ static unsigned long hits = 0;
 
 static void handle_new_conn_event(event *evp) {
 	new_conn_event *ev = (new_conn_event *) evp;
-	char *msg = "Hello, world!";
+	message *send_msg, *close_msg;
 	hits++;
-	send(ev->fd, msg, strlen(msg), 0);
-	close(ev->fd);
+	if ((close_msg = close_message(ev->fd, NULL)) == NULL)
+	    exit(ALLOCATION_ERROR);
+	if ((send_msg = send_message(ev->fd, "Hello, world!", close_msg)) == NULL)
+	    exit(ALLOCATION_ERROR);
+	message_queue(send_msg);
 	free(ev);
 	printf("Hit %lu\n", hits);
 }
