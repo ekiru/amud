@@ -7,7 +7,7 @@
 typedef struct queue_node queue_node;
 
 typedef struct {
-    pthread_mutex_t lock;
+	pthread_mutex_t lock;
 	queue_node *head, *tail;
 } queue;
 

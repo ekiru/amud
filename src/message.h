@@ -2,7 +2,7 @@
 #define MESSAGE_H
 
 typedef struct message {
-    void (*handle_message)(struct message *);
+	void (*handle_message)(struct message *);
 } message;
 
 message *message_dequeue(void);
