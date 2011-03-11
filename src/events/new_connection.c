@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "bstrlib.h"
+
 #include "error_status.h"
 #include "message.h"
 #include "messages/close.h"
@@ -21,7 +23,7 @@ static void handle_new_conn_event(event *evp) {
 	hits++;
 	if ((close_msg = close_message(ev->fd, NULL)) == NULL)
 	    exit(ALLOCATION_ERROR);
-	if ((send_msg = send_message(ev->fd, "Hello, world!", close_msg)) == NULL)
+	if ((send_msg = send_message(ev->fd, bfromcstr("Hello, world!"), close_msg)) == NULL)
 	    exit(ALLOCATION_ERROR);
 	message_queue(send_msg);
 	free(ev);

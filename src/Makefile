@@ -1,10 +1,11 @@
-CFLAGS=-Wall -I . -g
+CFLAGS=-Wall -I . -I dep/bstrlib -g
 LDFLAGS=-pthread
 
 main: main.o event_thread.o io_thread.o listener_thread.o \
       event.o events/new_connection.o \
       message.o messages/close.o messages/send.o \
-      queue.o
+      queue.o \
+      dep/bstrlib/bstrlib.o
 
 main.c: event_thread.h io_thread.h listener_thread.h
 
@@ -24,6 +25,8 @@ messages/send.c: messages/send.h
 messages/send.h: message.h
 
 queue.c: queue.h
+
+dep/bstrlib/bstrlib.o: dep/bstrlib/bstrlib.c dep/bstrlib/bstrlib.h
 
 clean:
 	rm *.o events/*.o messages/*.o main

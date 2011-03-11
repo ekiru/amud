@@ -6,28 +6,32 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
+#include "bstrlib.h"
+
 #include "error_status.h"
 
 typedef struct {
 	message msg;
 	int fd;
-	const char *text;
-	size_t length;
+	bstring text;
+	size_t offset;
 	message *next;
 } send_message_t;
 
+static void free_send_message(send_message_t *msg) {
+	if (bdestroy(msg->text) == BSTR_ERR)
+		exit(BSTRING_ERROR);
+}
+
 static void send_message_handler(message *msgp) {
 	send_message_t *msg = (send_message_t *) msgp;
-	ssize_t bytes_sent = send(msg->fd, msg->text, msg->length, MSG_DONTWAIT);
-	if (bytes_sent == msg->length) {
+	ssize_t bytes_sent = send(msg->fd, bdata(msg->text) + msg->offset, blength(msg->text) - msg->offset, MSG_DONTWAIT);
+	if (bytes_sent == blength(msg->text) - msg->offset) {
 		message_queue(msg->next);
-		free(msg);
+		free_send_message(msg);
 	} else if (bytes_sent >= 0) {
-		message *new_message = send_message(msg->fd, msg->text + bytes_sent, msg->next);
-		if (!new_message)
-			exit(ALLOCATION_ERROR);
-		message_queue(new_message);
-		free(msg);
+		msg->offset += bytes_sent;
+		message_queue(msgp);
 	} else {
 		switch (errno) {
 		case EAGAIN: /* message didn't send due to it being a blocking operation. */
@@ -35,7 +39,7 @@ static void send_message_handler(message *msgp) {
 			break;
 		case ECONNRESET:
 			/* need to work in handing of disconnections */
-			free(msg);
+			free_send_message(msg);
 			break;
 		default:
 			free(msg);
@@ -44,13 +48,13 @@ static void send_message_handler(message *msgp) {
 	}
 }
 
-message *send_message(int fd, const char *text, message *next_message) {
+message *send_message(int fd, bstring text, message *next_message) {
 	send_message_t *result = (send_message_t *) malloc(sizeof (*result));
 	if (result) {
 		result->msg.handle_message = &send_message_handler;
 		result->fd = fd;
 		result->text = text;
-		result->length = strlen(text);
+		result->offset = 0;
 		result->next = next_message;
 	}
 	return (message *) result;
