@@ -4,6 +4,7 @@ LDFLAGS=-pthread
 main: main.o event_thread.o io_thread.o listener_thread.o \
       event.o events/new_connection.o \
       message.o messages/close.o messages/send.o \
+      player.o \
       queue.o \
       dep/bstrlib/bstrlib.o
 
@@ -15,7 +16,8 @@ listener_thread.c: listener_thread.h error_status.h event.h events/new_connectio
 
 event.c: event.h queue.h
 events/new_connection.c: events/new_connection.h error_status.h \
-                         message.h messages/close.h messages/send.h
+                         message.h messages/send.h \
+                         player.h
 events/new_connection.h: event.h
 
 message.c: message.h queue.h
@@ -23,6 +25,8 @@ messages/close.c: messages/close.h
 messages/close.h: message.h
 messages/send.c: messages/send.h
 messages/send.h: message.h
+
+player.c: player.h
 
 queue.c: queue.h
 

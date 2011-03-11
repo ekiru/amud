@@ -9,6 +9,7 @@
 #include "message.h"
 #include "messages/close.h"
 #include "messages/send.h"
+#include "player.h"
 
 typedef struct {
 	event ev;
@@ -20,15 +21,17 @@ static unsigned long hits = 0;
 static void handle_new_conn_event(event *evp) {
 	new_conn_event *ev = (new_conn_event *) evp;
 	bstring greeting;
-	message *send_msg, *close_msg;
+	message *send_msg;
+	player *pl;
 	hits++;
-	if ((close_msg = close_message(ev->fd, NULL)) == NULL)
-	    exit(ALLOCATION_ERROR);
 	if ((greeting = bformat("Hello, you are user #%d.\n", hits)) == NULL)
 		exit(ALLOCATION_ERROR);
-	if ((send_msg = send_message(ev->fd, greeting, close_msg)) == NULL)
+	if ((send_msg = send_message(ev->fd, greeting, NULL)) == NULL)
 	    exit(ALLOCATION_ERROR);
 	message_queue(send_msg);
+	if ((pl = new_player(ev->fd, hits)) == NULL)
+		exit(ALLOCATION_ERROR);
+	add_player(pl);
 	free(ev);
 	printf("Hit %lu\n", hits);
 }
