@@ -19,11 +19,14 @@ static unsigned long hits = 0;
 
 static void handle_new_conn_event(event *evp) {
 	new_conn_event *ev = (new_conn_event *) evp;
+	bstring greeting;
 	message *send_msg, *close_msg;
 	hits++;
 	if ((close_msg = close_message(ev->fd, NULL)) == NULL)
 	    exit(ALLOCATION_ERROR);
-	if ((send_msg = send_message(ev->fd, bfromcstr("Hello, world!"), close_msg)) == NULL)
+	if ((greeting = bformat("Hello, you are user #%d.\n", hits)) == NULL)
+		exit(ALLOCATION_ERROR);
+	if ((send_msg = send_message(ev->fd, greeting, close_msg)) == NULL)
 	    exit(ALLOCATION_ERROR);
 	message_queue(send_msg);
 	free(ev);
