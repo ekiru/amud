@@ -12,7 +12,7 @@
 
 typedef struct {
 	message msg;
-	int fd;
+	player *recipient;
 	bstring text;
 	size_t offset;
 	message *next;
@@ -25,7 +25,7 @@ static void free_send_message(send_message_t *msg) {
 
 static void send_message_handler(message *msgp) {
 	send_message_t *msg = (send_message_t *) msgp;
-	ssize_t bytes_sent = send(msg->fd, bdata(msg->text) + msg->offset, blength(msg->text) - msg->offset, MSG_DONTWAIT);
+	ssize_t bytes_sent = send(player_fd(msg->recipient), bdata(msg->text) + msg->offset, blength(msg->text) - msg->offset, MSG_DONTWAIT);
 	if (bytes_sent == blength(msg->text) - msg->offset) {
 		message_queue(msg->next);
 		free_send_message(msg);
@@ -48,11 +48,11 @@ static void send_message_handler(message *msgp) {
 	}
 }
 
-message *send_message(int fd, bstring text, message *next_message) {
+message *send_message(player *recipient, bstring text, message *next_message) {
 	send_message_t *result = (send_message_t *) malloc(sizeof (*result));
 	if (result) {
 		result->msg.handle_message = &send_message_handler;
-		result->fd = fd;
+		result->recipient = recipient;
 		result->text = text;
 		result->offset = 0;
 		result->next = next_message;

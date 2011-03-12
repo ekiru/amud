@@ -25,11 +25,6 @@ static void handle_new_conn_event(event *evp) {
 	message *user_msg, *all_msg;
 	player *pl;
 	hits++;
-	if ((greeting = bformat("Hello, you are user #%d.\n", hits)) == NULL)
-		exit(ALLOCATION_ERROR);
-	if ((user_msg = send_message(ev->fd, greeting, NULL)) == NULL)
-	    exit(ALLOCATION_ERROR);
-	message_queue(user_msg);
 
 	if ((announcement = bformat("User #%d arrived.\n", hits)) == NULL)
 		exit(ALLOCATION_ERROR);
@@ -38,6 +33,13 @@ static void handle_new_conn_event(event *evp) {
 	if ((pl = new_player(ev->fd, hits)) == NULL)
 		exit(ALLOCATION_ERROR);
 	add_player(pl);
+
+	if ((greeting = bformat("Hello, you are user #%d.\n", hits)) == NULL)
+		exit(ALLOCATION_ERROR);
+	if ((user_msg = send_message(pl, greeting, NULL)) == NULL)
+	    exit(ALLOCATION_ERROR);
+	message_queue(user_msg);
+
 	free(ev);
 	printf("Hit %lu\n", hits);
 }

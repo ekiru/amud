@@ -28,7 +28,7 @@ message.c: message.h queue.h
 messages/close.c: messages/close.h
 messages/close.h: message.h
 messages/send.c: messages/send.h
-messages/send.h: message.h
+messages/send.h: message.h player.h
 
 player.c: player.h
 

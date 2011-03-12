@@ -20,7 +20,7 @@ void send_all(bstring text) {
 		bstring text_copy = bstrcpy((const_bstring) text);
 		if (text_copy == NULL)
 			exit(ALLOCATION_ERROR);
-		if ((msg = send_message(player_fd(curr), text_copy, NULL)) == NULL)
+		if ((msg = send_message(curr, text_copy, NULL)) == NULL)
 			exit(ALLOCATION_ERROR);
 		message_queue(msg);
 		curr = player_list_next(curr);
