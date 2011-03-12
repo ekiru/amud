@@ -6,6 +6,7 @@
 #include "bstrlib.h"
 
 #include "error_status.h"
+#include "io_util.h"
 #include "message.h"
 #include "messages/close.h"
 #include "messages/send.h"
@@ -20,15 +21,20 @@ static unsigned long hits = 0;
 
 static void handle_new_conn_event(event *evp) {
 	new_conn_event *ev = (new_conn_event *) evp;
-	bstring greeting;
-	message *send_msg;
+	bstring greeting, announcement;
+	message *user_msg, *all_msg;
 	player *pl;
 	hits++;
 	if ((greeting = bformat("Hello, you are user #%d.\n", hits)) == NULL)
 		exit(ALLOCATION_ERROR);
-	if ((send_msg = send_message(ev->fd, greeting, NULL)) == NULL)
+	if ((user_msg = send_message(ev->fd, greeting, NULL)) == NULL)
 	    exit(ALLOCATION_ERROR);
-	message_queue(send_msg);
+	message_queue(user_msg);
+
+	if ((announcement = bformat("User #%d arrived.\n", hits)) == NULL)
+		exit(ALLOCATION_ERROR);
+	send_all(announcement);
+
 	if ((pl = new_player(ev->fd, hits)) == NULL)
 		exit(ALLOCATION_ERROR);
 	add_player(pl);

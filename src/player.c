@@ -54,25 +54,25 @@ player *player_list_previous(player *p) {
 }
 
 void add_player(player *p) {
-	PLAYER_LIST_LOCKED({
-		if (player_list == NULL) {
-			player_list = p;
-			p->next = p->prev = p;
-		} else {
-			p->next = player_list;
-			p->prev = player_list->prev;
-			p->next->prev = p;
-			p->prev->next = p;
-		}
-	});
+	player_list_lock();
+	if (player_list == NULL) {
+		player_list = p;
+		p->next = p->prev = p;
+	} else {
+		p->next = player_list;
+		p->prev = player_list->prev;
+		p->next->prev = p;
+		p->prev->next = p;
+	}
+	player_list_unlock();
 }
 
 void remove_player(player *p) {
-	PLAYER_LIST_LOCKED({
-		if (p == player_list)
-			player_list = p->next;
+	player_list_lock();
+	if (p == player_list)
+		player_list = p->next;
 
-		p->next->prev = p->prev;
-		p->prev->next = p->next;
-	});
+	p->next->prev = p->prev;
+	p->prev->next = p->next;
+	player_list_unlock();
 }

@@ -3,6 +3,7 @@ LDFLAGS=-pthread
 
 main: main.o event_thread.o io_thread.o listener_thread.o \
       event.o events/new_connection.o \
+      io_util.o \
       message.o messages/close.o messages/send.o \
       player.o \
       queue.o \
@@ -16,9 +17,12 @@ listener_thread.c: listener_thread.h error_status.h event.h events/new_connectio
 
 event.c: event.h queue.h
 events/new_connection.c: events/new_connection.h error_status.h \
+                         io_util.h \
                          message.h messages/send.h \
                          player.h
 events/new_connection.h: event.h
+
+io_util.c: io_util.h error_status.h message.h messages/send.h player.h
 
 message.c: message.h queue.h
 messages/close.c: messages/close.h

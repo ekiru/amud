@@ -18,10 +18,4 @@ player *player_list_previous(player *p);
 void add_player(player *p);
 void remove_player(player *p);
 
-#define PLAYER_LIST_LOCKED(block) do { \
-		player_list_lock(); \
-		do block while (0); \
-		player_list_unlock(); \
-	} while (0)
-
 #endif
